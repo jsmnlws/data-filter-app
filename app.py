@@ -37,15 +37,12 @@ def to_excel_bytes(df: pd.DataFrame, sheet_name: str) -> bytes:
 def load_data(file_bytes: bytes, filename: str, sheet_name: Optional[str] = None) -> pd.DataFrame:
     name = filename.lower()
     bio = io.BytesIO(file_bytes)
-
     if name.endswith(".csv"):
         return pd.read_csv(bio)
-
     if name.endswith((".xlsx", ".xls", ".xlsm")):
         if sheet_name is None:
             return pd.read_excel(bio, engine="openpyxl")
         return pd.read_excel(bio, engine="openpyxl", sheet_name=sheet_name)
-
     raise ValueError("Unsupported file type")
 
 def try_parse_datetime(series: pd.Series) -> pd.Series:
