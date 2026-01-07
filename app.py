@@ -231,12 +231,13 @@ with b4:
         st.rerun()
 
 kept_ids = set(st.session_state["kept_ids"])
-kept_df = df_work[df_work["_row_id"].isin(list(kept_ids))][cols].copy()
-remaining_df = df_work[~df_work["_row_id"].isin(list(kept_ids))][cols].copy()
+
+final_cols = filter_cols if filter_cols else cols
+final_df = df_work[~df_work["_row_id"].isin(list(kept_ids))][final_cols].copy()
 
 st.subheader("Preview of dataset to be downloaded")
-st.write(f"Rows in final dataset: {len(remaining_df):,}")
-st.dataframe(remaining_df.head(output_preview_n), use_container_width=True)
+st.write(f"Rows in final dataset: {len(final_df):,}")
+st.dataframe(final_df.head(output_preview_n), use_container_width=True)
 
 st.subheader("Downloads")
 filename_base = st.text_input("Filename base", "output")
@@ -245,14 +246,14 @@ fmt = st.selectbox("Format", ["CSV", "Excel"])
 if fmt == "CSV":
     st.download_button(
         "Download final dataset",
-        remaining_df.to_csv(index=False).encode("utf-8"),
+        final_df.to_csv(index=False).encode("utf-8"),
         file_name=f"{filename_base}.csv",
         mime="text/csv"
     )
 else:
     st.download_button(
         "Download final dataset",
-        to_excel_bytes(remaining_df, "final"),
+        to_excel_bytes(final_df, "final"),
         file_name=f"{filename_base}.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
